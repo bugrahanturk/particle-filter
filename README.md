@@ -1,17 +1,19 @@
-# Particle Filter 
-Bu proje, ROS tabanlı bir Particle Filter Localization uygulamasıdır. Amaç, bir robotun odometri verilerini kullanarak tahmini konumunu belirlemek ve bu tahmini konumu parçacıkların (particles) dağılımı üzerinden elde etmektir. Bu algoritma, odometri verilerinin gürültü içeren yapısını modellemek için Üçgen Dağılım Gürültü Modeli kullanmaktadır.
+# Particle Filter Localization for ROS
+This project implements a ROS-based Particle Filter Localization algorithm for estimating a robot’s position based on odometry data and sensor readings. The robot utilizes particles (samples) to represent possible locations and refines its estimation using a Triangular Distribution Noise Model to handle uncertainty in odometry data.
 
-## Kurulum 
-- Particle filter node'unu derlemek için:
+Particle Filter is a probabilistic localization method that provides robust tracking by maintaining a set of weighted hypotheses (particles) that evolve over time.
+
+## Installation Instructions
+- To compile the particle filter node:
 ```
 $ cd ~/yourpath/src
-$ git clone https://gitlab.com/blm6191_2425b/members/23501021/blm6191-robotlar-odev-3.git
+$ git clone https://github.com/bugrahanturk/particle-filter.git
 $ cd ~/yourpath
 $ catkin_make
 $ source ~/.bashrc
 ```
 
-- Particle filter node'unu başlatmak için:
+- To initialize the particle filter node:
 ```
 [CTRL+ALT+T]
 $ roscore
@@ -21,52 +23,72 @@ $ rosrun particle_filter particle_filter_node _numParticles:=200
 $ rviz
 ```
 
-- odom.bag Dosyası
+- odom.bag
 ```
 $ rosbag play $(rospack find particle_filter)/odom.bag
 ```
 
-### Çalışma Prensibi
-- Parçacıklar robotun başlangıç pozisyonu etrafında rastgele dağıtılır.
-- Gelen odometri mesajına göre parçacıklar, gürültü eklenmiş kontrol işaretleri kullanılarak güncellenir.
-- Parçacıkların güncel konumlarının ortalaması alınarak robotun tahmini konumu elde edilir. Aynı zamanda tahmin edilen robotun konumu yayınlanır.
-- Parçacıkların ve tahmini robot konumunun görsel temsili RViz'de gösterilir.
+##  How It Works
+- Initialize Particles
+  
+Particles are randomly distributed around the robot’s starting position.
+Each particle represents a possible location of the robot.
+
+- Motion Update with Odometry Data
+
+Particles are moved according to the robot's odometry readings.
+A Triangular Distribution Noise Model is used to simulate real-world uncertainty.
+
+- Weighting and Resampling
+
+Particles are assigned weights based on sensor measurements.
+A new set of particles is sampled proportional to their weights.
+The estimated position is computed as the mean of all weighted particles.
+
+- Visualization in RViz
+
+Particles are displayed as points in RViz.
+The estimated robot position is visualized and continuously updated.
+
+## Used Topics
+- /odom : Odometry data (type: nav_msgs::Odometry)
+- particles_markers : MarkerArray for displaying particles in RViz
+- robot_marker : Marker showing the estimated position of the robot
+- estimated_pose : Broadcasting the estimated position as a Pose2D message
+
+This is how you can observe the movement of the robot and the distribution of particles.
 
 
-### Kullanılan Topic'ler
-- /odom : Odometri verisi (tip: nav_msgs::Odometry)
-- particles_markers : Parçacıkların RViz'de gösterilmesi için MarkerArray
-- robot_marker : Robotun tahmini konumunu gösteren Marker
-- estimated_pose : Tahmini konumun Pose2D mesajı olarak yayınlanması
+## Results
+By applying the Particle Filter algorithm, the estimated position of the robot with noisy odometry data is calculated and visualized on RViz. The estimated position is continuously improved by updating the particles and calculating the average position.
 
-Robotun hareketini ve parçacıkların dağılımını  bu sayede gözlemleyebilirsiniz.
+## Visualization of the Robot's Predicted Movement Result
 
-
-#### Sonuç
-Parçacık Filtresi (Particle Filter) algoritması uygulanarak robotun gürültülü odometri verisi ile tahmini konumunu hesaplanır ve RViz üzerinden görselleştirilir. Parçacıkların güncellenmesi ve ortalama konum hesabı ile tahmin edilen konum sürekli olarak iyileştirilir.
-
-- Rotobun Tahmin Edilen Hareket Sonucu Görselleştirilmesi
 <p>
-<img src="particle_filter/img/particle_filter_local_result.gif" width="574"/>
+<img src="particle_filter/img/particle_filter_local_result.gif" width="774"/>
 </p>
 
-- RVIZ Başlangıç Görüntüsü
+## RViz Initial State
+
 <p>
-<img src="particle_filter/img/rviz_starting_result.png" width="574"/>
+<img src="particle_filter/img/rviz_starting_result.png" width="774"/>
 </p>
 
-- Ros Node Çıktısı
+## ROS Node Output
+
 <p>
-<img src="particle_filter/img/node_output.png" width="574"/>
+<img src="particle_filter/img/node_output.png" width="774"/>
 </p>
 
-- Odom.bag Çıktısı
+## Odometry Bag File Output
+
 <p>
-<img src="particle_filter/img/odombag_output.png" width="574"/>
+<img src="particle_filter/img/odombag_output.png" width="774"/>
 </p>
 
-- rostopic list
+## Available ROS Topics
+
 <p>
-<img src="particle_filter/img/rostopic_list.png" width="574"/>
+<img src="particle_filter/img/rostopic_list.png" width="774"/>
 </p>
 
